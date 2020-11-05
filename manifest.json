@@ -25,7 +25,8 @@
     "tabs",
     "activeTab",
     "https://mail.google.com/*",
-    "storage"
+    "storage",
+    "https://politeness-api.herokuapp.com/*"
   ],
   "web_accessible_resources": [
     "img/*.png"
