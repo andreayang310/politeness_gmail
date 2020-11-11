@@ -66,6 +66,7 @@ async function getPoliteness() {
     }
 }
 
+//{'label': label, 'score': score}
 async function englishPolitenessAPI(text) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -82,7 +83,8 @@ async function englishPolitenessAPI(text) {
     const url = "https://politeness-api.herokuapp.com/en-politeness";
     let response = await fetch(proxyurl + url, requestOptions)
     let json = await response.json();
-    return json["Overall impoliteness"][0].toLowerCase();
+    console.log(json)
+    return json
 }
 
 async function chinesePolitenessAPI(text) {
@@ -101,15 +103,17 @@ async function chinesePolitenessAPI(text) {
     const url = "https://politeness-api.herokuapp.com/ch-politeness";
     let response = await fetch(proxyurl + url, requestOptions)
     let json = await response.json();
-    return json["0"].toLowerCase();
+    return json
 }
 
 function injectHTML(language, politeness) {
+    let label = politeness['label']
+    let score = politeness['score'];
     let translationBox = $(viewTranslationButtonSelector).first().parent().parent();
     translationBox.css({
         'height': 80,
     })
-    const newHTML = "<div id='politeness'><p>" + "The " + language + " text is: " + politeness + "</p></div>";
+    const newHTML = "<div id='politeness'><p>" + "The " + language + " text is: " + label + "</p></div>";
     let politenessBox = $('#politeness')
     if (politenessBox.length){
         politenessBox.html(newHTML);
