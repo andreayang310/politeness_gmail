@@ -109,17 +109,107 @@ async function chinesePolitenessAPI(text) {
 function injectHTML(language, politeness) {
     let label = politeness['label']
     let score = politeness['score'];
-    let translationBox = $(viewTranslationButtonSelector).first().parent().parent();
-    translationBox.css({
-        'height': 80,
+    let background = $(viewTranslationButtonSelector).first().parent().parent();
+    background.css({
+        'width': '100%',
+        'height': '127px',
+        'background': "#F5F5F5",
+        'border-radius': '8px'
     })
-    const newHTML = "<div id='politeness'><p>" + "The " + language + " text is: " + label + "</p></div>";
-    let politenessBox = $('#politeness')
-    if (politenessBox.length){
-        politenessBox.html(newHTML);
+
+    let translate = $(viewTranslationButtonSelector).first().parent()
+    translate.css({
+        'position':'absolute',
+        'left': '7.54%',
+        'right': '67.79%',
+        'top': '24.95%',
+        'bottom': '71.55%'
+    })
+
+    const scale = "<div class='scale'>" +
+        "<span class='neutral'>NEUTRAL</span>" +
+        "<span class='impolite'>IMPOLITE</span>" +
+        "<span class='polite'>POLITE</span>" +
+        "<div class='rainbow'></div>"+
+        "</div>"
+    let scaleDiv = $('.scale')
+    if (scaleDiv.length){
+        scaleDiv.html(scale)
     }else{
-        translationBox.append(newHTML);
+        background.append(scale);
+        let neutral = $('.neutral')
+        neutral.css({
+            'position':'absolute',
+            'left': '16.43%',
+            'right': '80.94%',
+            'top': '31.84%',
+            'bottom': '66.63%',
+            'font-family': 'Roboto',
+            'font-style': 'normal',
+            'font-weight': 'bold',
+            'font-size': '12px',
+            'line-height': '14px',
+            /* identical to box height */
+            'color': '#444444',
+            'opacity': '0.3'
+        })
+        let impolite = $('.impolite')
+        impolite.css({
+            'position':'absolute',
+            'left':  '9.83%',
+            'right': '87.44%',
+            'top': '31.84%',
+            'bottom': '66.63%',
+            'font-family': 'Roboto',
+            'font-style': 'normal',
+            'font-weight': 'bold',
+            'font-size': '12px',
+            'line-height': '14px',
+            /* identical to box height */
+            'color': '#444444',
+            'opacity': '0.3'
+        })
+        let polite = $('.polite')
+        polite.css({
+            'position':'absolute',
+            'left':  '23.68%',
+            'right': '74.28%',
+            'top': '31.84%',
+            'bottom': '66.63%',
+            'font-family': 'Roboto',
+            'font-style': 'normal',
+            'font-weight': 'bold',
+            'font-size': '12px',
+            'line-height': '14px',
+            /* identical to box height */
+            'color': '#444444',
+            'opacity': '0.3'
+        })
+
     }
-    console.log(newHTML);
+
+    const annotation = "<span class='annotation'>" + "The message appears to be " + label + " in " + language + "</span>"
+    let annotationSpan = $('.annotation')
+    if (annotationSpan.length){
+        annotationSpan.html(annotation);
+    }else{
+        background.append(annotation);
+        annotationSpan = $('.politeness')
+        annotationSpan.css({
+            'position':'absolute',
+            'left':' 27.25%',
+            'right': '22.88%',
+            'top': '35.17%',
+            'bottom': '62.47%',
+            'font-family': 'Roboto',
+            'font-style': 'normal',
+            'font-weight': '500',
+            'font-size':'20px',
+            'line-height': '23px',
+            'color': '#444444'
+        })
+    }
+
+
 
 }
