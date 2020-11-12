@@ -13,11 +13,12 @@ let cache = {}
 
 // register click event for translation button
 $(document).on('click', menuTranslateSelector, function() {
-    if ($( this ).text() === 'Translate message'){
-        setTimeout(function(){
-            getPoliteness();
-        }, 1500);
-    }
+    // if ($( this ).text() === 'Translate message'){
+    //     setTimeout(function(){
+    //
+    //     }, 500);
+    // }
+    getPoliteness();
 });
 
 $(document).on('click', viewTranslationButtonSelector, function(){
@@ -51,6 +52,7 @@ async function getPoliteness() {
                 // console.log("The Chinese text is:", politeness);
                 injectHTML(originalLanguage, politeness);
             }else{
+                console.log("Calling API")
                 let politeness = await chinesePolitenessAPI(originalText); //polite, neutral, impolite
                 cache[originalText] = politeness
                 // console.log("The Chinese text is:", politeness);
@@ -85,11 +87,10 @@ async function englishPolitenessAPI(text) {
         redirect: 'follow',
 
     };
-    const proxyurl = 'https://cors-anywhere-politeness.herokuapp.com/';
+    // const proxyurl = 'https://cors-anywhere-politeness.herokuapp.com/';
     const url = "https://politeness-api.herokuapp.com/en-politeness";
-    let response = await fetch(proxyurl + url, requestOptions)
+    let response = await fetch(url, requestOptions)
     let json = await response.json();
-    console.log(json)
     return json
 }
 
@@ -105,10 +106,11 @@ async function chinesePolitenessAPI(text) {
         redirect: 'follow',
 
     };
-    const proxyurl = 'https://cors-anywhere-politeness.herokuapp.com/';
+    // const proxyurl = 'https://cors-anywhere-politeness.herokuapp.com/';
     const url = "https://politeness-api.herokuapp.com/ch-politeness";
-    let response = await fetch(proxyurl + url, requestOptions)
+    let response = await fetch( url, requestOptions)
     let json = await response.json();
+    console.log(json)
     return json
 }
 
