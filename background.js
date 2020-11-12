@@ -33,13 +33,19 @@ $.fn.log = function() {
 async function getPoliteness() {
     const originalLanguage = $(languageButtonSelector).first().text();
     const translatedLanguage = $(languageButtonSelector).last().text();
-    const originalText = $(textBodySelector).first().text();
+    const textBody = $(textBodySelector).first();
+    let originalText = ""
+    textBody.children().each(function(){
+        originalText = originalText + $(this).text();
+    })
+    console.log(originalText);
+
     const translatedText = $(textBodySelector).last().text()
     const viewTranslationButton = $(viewTranslationButtonSelector).first().text();
 
     if (originalLanguage === 'Chinese' && translatedLanguage === 'English') {
-        if (viewTranslationButton == "View translated message") {
-            // console.log("Getting Chinese Politeness")
+        // if (viewTranslationButton == "View translated message") {
+        //     // console.log("Getting Chinese Politeness")
             if (cache[originalText]){
                 let politeness = cache[originalText]
                 // console.log("The Chinese text is:", politeness);
@@ -50,19 +56,19 @@ async function getPoliteness() {
                 // console.log("The Chinese text is:", politeness);
                 injectHTML(originalLanguage, politeness);
             }
-        } else {
-            // console.log("Getting English Politeness")
-            if (cache[translatedText]){
-                let politeness = cache[translatedText]
-                // console.log("The English text is:", politeness);
-                injectHTML(translatedLanguage, politeness);
-            }else{
-                let politeness = await englishPolitenessAPI(translatedText); //polite, neutral, impolite
-                // console.log("The English text is:", politeness);
-                cache[translatedText] = politeness
-                injectHTML(translatedLanguage, politeness);
-            }
-        }
+        // } else {
+        //     // console.log("Getting English Politeness")
+        //     if (cache[translatedText]){
+        //         let politeness = cache[translatedText]
+        //         // console.log("The English text is:", politeness);
+        //         injectHTML(translatedLanguage, politeness);
+        //     }else{
+        //         let politeness = await englishPolitenessAPI(translatedText); //polite, neutral, impolite
+        //         // console.log("The English text is:", politeness);
+        //         cache[translatedText] = politeness
+        //         injectHTML(translatedLanguage, politeness);
+        //     }
+        // }
     }
 }
 
@@ -152,7 +158,7 @@ function injectHTML(language, politeness) {
     }
 
 
-    const annotation = "<span class='annotation'>" + "The message appears to be " + label + " in " + language + "</span>"
+    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in " + language + "</span>"
     let annotationSpan = $('.annotation')
     if (annotationSpan.length){
         annotationSpan.html(annotation);
