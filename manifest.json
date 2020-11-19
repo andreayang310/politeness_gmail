@@ -29,6 +29,7 @@
     "https://politeness-api.herokuapp.com/*"
   ],
   "web_accessible_resources": [
-    "img/*.png"
+    "img/*.png",
+    "background.js"
   ]
 }
