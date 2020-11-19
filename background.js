@@ -33,18 +33,37 @@ $.fn.log = function() {
 
 async function getPoliteness() {
     const originalLanguage = $(languageButtonSelector).first().text();
-    const translatedLanguage = $(languageButtonSelector).last().text();
+    // const translatedLanguage = $(languageButtonSelector).last().text();
     const textBody = $(textBodySelector).first();
     let originalText = ""
     textBody.children().each(function(){
         originalText = originalText + $(this).text();
     })
+
+    let begin = 0
+    for (let i = 0; i < originalText.length; i++) {
+        if (originalText.charAt(i).match(/[\u3400-\u9FBF]/)){
+            begin = i;
+            break;
+        }
+    }
+    let end = originalText.length-1;
+    for (let i = originalText.length-1; i >= 0; i--){
+        if (originalText.charAt(i).match(/[\u3400-\u9FBF]/)){
+            end = i;
+            break
+        }
+    }
+    originalText = originalText.substring(begin, end+1);
+
     console.log(originalText);
 
-    const translatedText = $(textBodySelector).last().text()
-    const viewTranslationButton = $(viewTranslationButtonSelector).first().text();
+    // const translatedText = $(textBodySelector).last().text()
+    // const viewTranslationButton = $(viewTranslationButtonSelector).first().text();
+    const translatedFromChinese = originalLanguage === 'Chinese' ;
+    const detectCh = originalText.match(/[\u3400-\u9FBF]/);
 
-    if ((originalLanguage === 'Chinese' && translatedLanguage === 'English')) {
+    if (translatedFromChinese || detectCh.length) {
             if (cache[originalText]){
                 let politeness = cache[originalText]
                 // console.log("The Chinese text is:", politeness);
@@ -111,15 +130,18 @@ function injectHTML(language, politeness) {
         'background': "#F5F5F5",
         'border-radius': '8px'
     })
-
+    console.log(background)
     let translate = $(viewTranslationButtonSelector).first().parent()
     translate.css({
         'position':'absolute',
         'left': '7.54%',
         'right': 'auto',
         'top':  '24.95%',
+        // 'top':'5.00%',
         'bottom': 'auto',
     })
+
+    console.log(translate)
     let wrapperDiv = $('.wrapper')
     if (!wrapperDiv.length){
         background.append("<div class=wrapper></div>");
@@ -129,7 +151,7 @@ function injectHTML(language, politeness) {
     let scaleurl = chrome.runtime.getURL("img/polite.png");
     if (label.toLowerCase() == "neutral"){
         scaleurl = chrome.runtime.getURL("img/neutral.png");
-    }else if (label.toLowerCase() == "impolite"){
+    }else if (label.toLowerCase() == "rude"){
         scaleurl = chrome.runtime.getURL("img/impolite.png");
     }
 
@@ -148,7 +170,7 @@ function injectHTML(language, politeness) {
         })
     }
 
-    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in " + language + "</span>"
+    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in " + "Chinese </span>"
     let annotationSpan = $('.annotation')
     if (annotationSpan.length){
         annotationSpan.html(annotation);
@@ -169,7 +191,4 @@ function injectHTML(language, politeness) {
             'color': '#444444'
         })
     }
-
-
-
 }
