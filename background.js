@@ -121,7 +121,6 @@ async function chinesePolitenessAPI(text) {
 }
 
 function injectHTML(language, politeness) {
-    let label = politeness['label']
     let score = politeness['score'];
     let background = $(viewTranslationButtonSelector).first().parent().parent();
     background.css({
@@ -148,14 +147,24 @@ function injectHTML(language, politeness) {
     }
 
     let scaleurl = chrome.runtime.getURL("img/verypolite.png");
+    let label = "very polite";
+    let highlightColor = '0DD459';
     if (score <= -0.5){
         scaleurl = chrome.runtime.getURL("img/veryimpolite.png");
+        label = "very impolite";
+        highlightColor = '#FF893B';
     }else if (score < 0){
         scaleurl = chrome.runtime.getURL("img/impolite.png");
+        label = "impolite";
+        highlightColor = '#FF893B';
     }else if (score == 0){
         scaleurl = chrome.runtime.getURL("img/neutral.png");
+        label = "neutral";
+        highlightColor = '#FECA56';
     }else if (score <= 0.5) {
         scaleurl = chrome.runtime.getURL("img/polite.png");
+        label = "polite";
+        highlightColor = '0DD459';
     }
 
     const scale = "<span class='scale'><img src=" + scaleurl + " width='367px' height='31px'></span>"
@@ -173,8 +182,8 @@ function injectHTML(language, politeness) {
             'display': 'block'
         })
     }
-
-    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in Chinese </span>"
+    const labelhighlight = "<mark style=background-color:" +highlightColor + '>' +label + "</mark>";
+    const annotation = "<span class='annotation'>" + "The original message appears to be " + labelhighlight + " in Chinese </span>"
     let annotationSpan = $('.annotation')
     if (annotationSpan.length){
         annotationSpan.html(annotation);
