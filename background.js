@@ -132,14 +132,13 @@ function injectHTML(language, politeness) {
     })
     console.log(background)
     let translate = $(viewTranslationButtonSelector).first().parent()
-    translate.css({
-        'position':'absolute',
-        'left': '7.54%',
-        'right': 'auto',
-        'top':  '24.95%',
-        // 'top':'5.00%',
-        'bottom': 'auto',
-    })
+    // translate.css({
+    //     'position':'absolute',
+    //     'left': '7.54%',
+    //     'right': 'auto',
+    //     'top':  '24.95%',
+    //     'bottom': 'auto',
+    // })
 
     console.log(translate)
     let wrapperDiv = $('.wrapper')
@@ -148,11 +147,15 @@ function injectHTML(language, politeness) {
         wrapperDiv = $('.wrapper')
     }
 
-    let scaleurl = chrome.runtime.getURL("img/polite.png");
-    if (label.toLowerCase() == "neutral"){
-        scaleurl = chrome.runtime.getURL("img/neutral.png");
-    }else if (label.toLowerCase() == "rude"){
+    let scaleurl = chrome.runtime.getURL("img/verypolite.png");
+    if (score <= -0.5){
+        scaleurl = chrome.runtime.getURL("img/veryimpolite.png");
+    }else if (score < 0){
         scaleurl = chrome.runtime.getURL("img/impolite.png");
+    }else if (score == 0){
+        scaleurl = chrome.runtime.getURL("img/neutral.png");
+    }else if (score <= 0.5) {
+        scaleurl = chrome.runtime.getURL("img/polite.png");
     }
 
     const scale = "<span class='scale'><img src=" + scaleurl + " width='367px' height='31px'></span>"
@@ -163,14 +166,15 @@ function injectHTML(language, politeness) {
         wrapperDiv.append(scale);
         scaleSpan = $('.scale');
         scaleSpan.css({
-            'position':'absolute',
-            'left':' 7.54%',
-            'right': 'auto',
-            'top': '45.00%',
+            // 'position':'absolute',
+            // 'left':' 7.54%',
+            // 'right': 'auto',
+            // 'top': '45.00%',
+            'display': 'block'
         })
     }
 
-    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in " + "Chinese </span>"
+    const annotation = "<span class='annotation'>" + "The original message appears to be " + label + " in Chinese </span>"
     let annotationSpan = $('.annotation')
     if (annotationSpan.length){
         annotationSpan.html(annotation);
@@ -178,11 +182,11 @@ function injectHTML(language, politeness) {
         wrapperDiv.append(annotation);
         annotationSpan = $('.annotation')
         annotationSpan.css({
-            'position':'absolute',
-            'left': 'auto',
-            'right': '20%',
-            'top': '47%',
-            'bottom': 'auto',
+            // 'position':'absolute',
+            // 'left': 'auto',
+            // 'right': '20%',
+            // 'top': '47%',
+            // 'bottom': 'auto',
             'font-family': 'Roboto',
             'font-style': 'normal',
             'font-weight': '400',
