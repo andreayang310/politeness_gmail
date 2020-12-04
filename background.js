@@ -13,11 +13,6 @@ let cache = {}
 
 // register click event for translation button
 $(document).on('click', menuTranslateSelector, function() {
-    // if ($( this ).text() === 'Translate message'){
-    //     setTimeout(function(){
-    //
-    //     }, 500);
-    // }
     getPoliteness();
 });
 
@@ -33,7 +28,6 @@ $.fn.log = function() {
 
 async function getPoliteness() {
     const originalLanguage = $(languageButtonSelector).first().text();
-    // const translatedLanguage = $(languageButtonSelector).last().text();
     const textBody = $(textBodySelector).first();
     let originalText = ""
     textBody.children().each(function(){
@@ -55,7 +49,6 @@ async function getPoliteness() {
         }
     }
     originalText = originalText.substring(begin, end+1);
-
     console.log(originalText);
 
     // const translatedText = $(textBodySelector).last().text()
@@ -70,33 +63,13 @@ async function getPoliteness() {
                 injectHTML(originalLanguage, politeness);
             }else{
                 console.log("Calling API")
-                let politeness = await chinesePolitenessAPI(originalText); //polite, neutral, impolite
+                let politeness = await chinesePolitenessAPI(originalText);
                 cache[originalText] = politeness
                 // console.log("The Chinese text is:", politeness);
                 injectHTML(originalLanguage, politeness);
             }
 
     }
-}
-
-//{'label': label, 'score': score}
-async function englishPolitenessAPI(text) {
-    const myHeaders = new Headers();
-    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
-    const urlencoded = new URLSearchParams();
-    urlencoded.append("sentence", text);
-    const requestOptions = {
-        method: 'POST',
-        headers: myHeaders,
-        body: urlencoded,
-        redirect: 'follow',
-
-    };
-    // const proxyurl = 'https://cors-anywhere-politeness.herokuapp.com/';
-    const url = "https://politeness-api.herokuapp.com/en-politeness";
-    let response = await fetch(url, requestOptions)
-    let json = await response.json();
-    return json
 }
 
 async function chinesePolitenessAPI(text) {
@@ -122,28 +95,18 @@ async function chinesePolitenessAPI(text) {
 
 function injectHTML(language, politeness) {
     let score = politeness['score'];
-    let background = $(viewTranslationButtonSelector).first().parent().parent();
-    background.css({
-        'width': '100%',
-        'height': '110px',
-        'background': "#F5F5F5",
-        'border-radius': '8px'
-    })
-    console.log(background)
-    let translate = $(viewTranslationButtonSelector).first().parent()
-    // translate.css({
-    //     'position':'absolute',
-    //     'left': '7.54%',
-    //     'right': 'auto',
-    //     'top':  '24.95%',
-    //     'bottom': 'auto',
-    // })
+    let sibling = $(viewTranslationButtonSelector).first().parent().parent();
+    let background = $('.background');
+    let backgroundDiv = "<div class=background style=width:100%;height:55px;background:#F5F5F5;border-radius:8px></div>"
+    if (!background.length){
+        $(backgroundDiv).insertAfter(sibling);
+        background = $('.background').first();
+    }
 
-    console.log(translate)
     let wrapperDiv = $('.wrapper')
     if (!wrapperDiv.length){
         background.append("<div class=wrapper></div>");
-        wrapperDiv = $('.wrapper')
+        wrapperDiv = $('.wrapper');
     }
 
     let scaleurl = chrome.runtime.getURL("img/verypolite.png");
@@ -166,22 +129,23 @@ function injectHTML(language, politeness) {
         label = "polite";
         highlightColor = '0DD459';
     }
-
-    const scale = "<span class='scale'><img src=" + scaleurl + " width='367px' height='31px'></span>"
-    let scaleSpan = $('.scale')
-    if (scaleSpan.length){
-        scaleSpan.html(scale)
-    }else{
+    let scale = "<span class='scale'><img class='scaleImg' src=" + scaleurl + "></span>"
+    let scaleDiv = $('.scale')
+    if (scaleDiv.length){
+        scaleDiv.html(scale);
+    } else{
         wrapperDiv.append(scale);
-        scaleSpan = $('.scale');
-        scaleSpan.css({
-            // 'position':'absolute',
-            // 'left':' 7.54%',
-            // 'right': 'auto',
-            // 'top': '45.00%',
-            'display': 'block'
+        scaleDiv = $('.scale');
+        scaleDiv.css({
+            'vertical-align': 'middle'
+        })
+        let scaleImg = $('.scaleImg')
+        scaleImg.css({
+            'max-width':'30%',
+            'height':'auto'
         })
     }
+
     const labelhighlight = "<mark style=background-color:" +highlightColor + '>' +label + "</mark>";
     const annotation = "<span class='annotation'>" + "The original message appears to be " + labelhighlight + " in Chinese </span>"
     let annotationSpan = $('.annotation')
@@ -191,17 +155,22 @@ function injectHTML(language, politeness) {
         wrapperDiv.append(annotation);
         annotationSpan = $('.annotation')
         annotationSpan.css({
-            // 'position':'absolute',
-            // 'left': 'auto',
-            // 'right': '20%',
-            // 'top': '47%',
-            // 'bottom': 'auto',
+            'vertical-align': 'middle',
+            'padding':'20px',
             'font-family': 'Roboto',
             'font-style': 'normal',
             'font-weight': '400',
-            'font-size':'16px',
-            'line-height': '23px',
+            'font-size':'14px',
+            'line-height': '20px',
             'color': '#444444'
         })
     }
+
+    wrapperDiv.css({
+        'padding-left':'8px',
+        'padding-top':'15px',
+        'vertical-align':'middle'
+    })
+
+
 }
