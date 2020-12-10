@@ -1,12 +1,11 @@
 
-
 // set variables for relevant button selectors
 const menuTranslateSelector = '.cj';
 const viewTranslationButtonSelector = '.B9.J-J5-Ji';
 const textBodySelector = '.a3s.aiL';
 const languageButtonSelector = '.J-J5-Ji.J-JN-M-I-Jm';
 
-// cache for storing already computed message politness
+// cache for storing already computed message politeness
 let cache = {}
 
 /** register click event for menu translate button **/
@@ -19,13 +18,16 @@ $(document).on('click', viewTranslationButtonSelector, function(){
     getPoliteness();
 });
 
-/** logging function **/
+/** JQuery logging function **/
 $.fn.log = function() {
     console.log.apply(console, this);
     return this;
 };
 
-/** Get the original and translated text, call API on the original text if it is Chinese**/
+/** Get the original text using selectors
+ * Call chinesePolitenessAPI() on the original text if it is in Chinese
+ * With the API results, call injectHTML() to display the politeness on the page
+ * **/
 async function getPoliteness() {
     const originalLanguage = $(languageButtonSelector).first().text();
     const textBody = $(textBodySelector).first();
@@ -54,11 +56,8 @@ async function getPoliteness() {
     originalText = originalText.substring(begin, end+1);
     console.log(originalText);
 
-    // const translatedText = $(textBodySelector).last().text()
-    // const viewTranslationButton = $(viewTranslationButtonSelector).first().text();
-
     // Check translation button if original language is Chinese.
-    // If button still says "detect langauge", try to match regex
+    // If button still says "detect language", try to match regex to the text
     const translatedFromChinese = originalLanguage === 'Chinese' ;
     const detectCh = originalText.match(/[\u3400-\u9FBF]/);
 
@@ -79,7 +78,10 @@ async function getPoliteness() {
     }
 }
 
-/** Function for handling calling the Chinese Politeness api on text input **/
+/** Function for handling calling the Chinese Politeness api on text input
+ * Returns: json in the format of {'label': label, 'score': score}
+ * where label is the politeneess label of the text (rude/neutral/polite), score is the actual score value
+ * **/
 async function chinesePolitenessAPI(text) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -101,7 +103,7 @@ async function chinesePolitenessAPI(text) {
     return json
 }
 
-/** Modifying the page HTML and CSS to display the politeness scores**/
+/** Modifying the page HTML and CSS to display the politeness scores and message**/
 function injectHTML(language, politeness) {
     // add grey background box
     let sibling = $(viewTranslationButtonSelector).first().parent().parent();
@@ -119,7 +121,7 @@ function injectHTML(language, politeness) {
         wrapperDiv = $('.wrapper');
     }
 
-    // choose the correct scale image to display based on score value, cut off at -0.5 and 0.5
+    // choose the correct scale image and highlight color to display based on score value
     let score = politeness['score'];
     let scaleurl = chrome.runtime.getURL("img/verypolite.png");
     let label = "very polite";
