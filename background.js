@@ -1,40 +1,42 @@
-// Some Logging for debugging
-// translateButton.log();
-// textBody.log();
-// console.log(translationButton.text());
-// console.log(textBody.text());
-// console.log(originalLanguage.text());
 
+
+// set variables for relevant button selectors
 const menuTranslateSelector = '.cj';
 const viewTranslationButtonSelector = '.B9.J-J5-Ji';
 const textBodySelector = '.a3s.aiL';
 const languageButtonSelector = '.J-J5-Ji.J-JN-M-I-Jm';
+
+// cache for storing already computed message politness
 let cache = {}
 
-// register click event for translation button
+/** register click event for menu translate button **/
 $(document).on('click', menuTranslateSelector, function() {
     getPoliteness();
 });
 
-//
+/** register click event for the translation bar button **/
 $(document).on('click', viewTranslationButtonSelector, function(){
     getPoliteness();
 });
 
-
+/** logging function **/
 $.fn.log = function() {
     console.log.apply(console, this);
     return this;
 };
 
+/** Get the original and translated text, call API on the original text if it is Chinese**/
 async function getPoliteness() {
     const originalLanguage = $(languageButtonSelector).first().text();
     const textBody = $(textBodySelector).first();
+
+    // concatenate text to handle embedded messages
     let originalText = ""
     textBody.children().each(function(){
         originalText = originalText + $(this).text();
     })
 
+    // detect beginning and end of Chinese text to strip extraneous English text
     let begin = 0
     for (let i = 0; i < originalText.length; i++) {
         if (originalText.charAt(i).match(/[\u3400-\u9FBF]/)){
@@ -54,10 +56,14 @@ async function getPoliteness() {
 
     // const translatedText = $(textBodySelector).last().text()
     // const viewTranslationButton = $(viewTranslationButtonSelector).first().text();
+
+    // Check translation button if original language is Chinese.
+    // If button still says "detect langauge", try to match regex
     const translatedFromChinese = originalLanguage === 'Chinese' ;
     const detectCh = originalText.match(/[\u3400-\u9FBF]/);
 
     if (translatedFromChinese || detectCh.length) {
+            // if already in cache, no need to call again
             if (cache[originalText]){
                 let politeness = cache[originalText]
                 // console.log("The Chinese text is:", politeness);
@@ -73,6 +79,7 @@ async function getPoliteness() {
     }
 }
 
+/** Function for handling calling the Chinese Politeness api on text input **/
 async function chinesePolitenessAPI(text) {
     const myHeaders = new Headers();
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -94,8 +101,9 @@ async function chinesePolitenessAPI(text) {
     return json
 }
 
+/** Modifying the page HTML and CSS to display the politeness scores**/
 function injectHTML(language, politeness) {
-    let score = politeness['score'];
+    // add grey background box
     let sibling = $(viewTranslationButtonSelector).first().parent().parent();
     let background = $('.background');
     let backgroundDiv = "<div class=background style=width:100%;height:55px;background:#F5F5F5;border-radius:8px;overflow:hidden></div>"
@@ -104,12 +112,15 @@ function injectHTML(language, politeness) {
         background = $('.background').first();
     }
 
+    // add wrapper div for scale, if there isn't already one
     let wrapperDiv = $('.wrapper')
     if (!wrapperDiv.length){
         background.append("<div class=wrapper></div>");
         wrapperDiv = $('.wrapper');
     }
 
+    // choose the correct scale image to display based on score value, cut off at -0.5 and 0.5
+    let score = politeness['score'];
     let scaleurl = chrome.runtime.getURL("img/verypolite.png");
     let label = "very polite";
     let highlightColor = '0DD459';
@@ -130,6 +141,8 @@ function injectHTML(language, politeness) {
         label = "polite";
         highlightColor = '0DD459';
     }
+
+    // Set the display of scale image
     let scale = "<span class='scale'><img class='scaleImg' src=" + scaleurl + "></span>"
     let scaleDiv = $('.scale')
     if (scaleDiv.length){
@@ -148,6 +161,7 @@ function injectHTML(language, politeness) {
         })
     }
 
+    // setting text message displayed next to the politeness scale
     const labelhighlight = "<mark style=background-color:" +highlightColor + '>' +label + "</mark>";
     const annotation = "<span class='annotation'>" + "The original message appears to be " + labelhighlight + " in Chinese </span>"
     let annotationSpan = $('.annotation')
@@ -168,6 +182,7 @@ function injectHTML(language, politeness) {
         })
     }
 
+    // change padding and alignment of the wrapper div
     wrapperDiv.css({
         'padding-left':'8px',
         'padding-top':'15px',
