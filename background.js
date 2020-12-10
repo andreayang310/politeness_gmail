@@ -16,6 +16,7 @@ $(document).on('click', menuTranslateSelector, function() {
     getPoliteness();
 });
 
+//
 $(document).on('click', viewTranslationButtonSelector, function(){
     getPoliteness();
 });
@@ -97,7 +98,7 @@ function injectHTML(language, politeness) {
     let score = politeness['score'];
     let sibling = $(viewTranslationButtonSelector).first().parent().parent();
     let background = $('.background');
-    let backgroundDiv = "<div class=background style=width:100%;height:55px;background:#F5F5F5;border-radius:8px></div>"
+    let backgroundDiv = "<div class=background style=width:100%;height:55px;background:#F5F5F5;border-radius:8px;overflow:hidden></div>"
     if (!background.length){
         $(backgroundDiv).insertAfter(sibling);
         background = $('.background').first();
@@ -141,7 +142,8 @@ function injectHTML(language, politeness) {
         })
         let scaleImg = $('.scaleImg')
         scaleImg.css({
-            'max-width':'30%',
+            'max-width':'300px',
+            'min-width': '100px',
             'height':'auto'
         })
     }
