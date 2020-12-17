@@ -108,7 +108,7 @@ function injectHTML(language, politeness) {
     // add grey background box
     let sibling = $(viewTranslationButtonSelector).first().parent().parent();
     let background = $('.background');
-    let backgroundDiv = "<div class=background style=width:100%;height:55px;background:#F5F5F5;border-radius:8px;overflow:hidden></div>"
+    let backgroundDiv = "<div class=background style=width:100%;height:114px;background:#F5F5F5;border-radius:8px;overflow:hidden></div>"
     if (!background.length){
         $(backgroundDiv).insertAfter(sibling);
         background = $('.background').first();
@@ -120,6 +120,49 @@ function injectHTML(language, politeness) {
         background.append("<div class=wrapper></div>");
         wrapperDiv = $('.wrapper');
     }
+
+    let headerText = "<span class='headertext'>Politeness estimator for emails translated from Chinese</span>";
+    let helpIcon = chrome.runtime.getURL("img/icon.png");
+    let translateIcon = chrome.runtime.getURL("img/translate.png");
+    let headerDiv = "<div class='translateHeader'>" +
+        "<img class='translateIcon' src=" + translateIcon + ">" +
+        headerText +
+        "<img class='helpIcon' src=" + helpIcon + ">" +
+        "</div>";
+
+    // Set the header for the translation bar
+    let translateHeader = $('.translateHeader')
+    if (translateHeader.length){
+        translateHeader.html(headerDiv);
+    } else{
+        wrapperDiv.append(headerDiv);
+        let translateIcon = $('.translateIcon')
+        translateIcon.css({
+            'padding-left': '5px',
+            'padding-right':'5px',
+            'vertical-align': 'top',
+        })
+        let helpIcon = $('.helpIcon')
+        helpIcon.css({
+            'padding-left': '5px',
+            'padding-right':'5px',
+            'vertical-align': 'top',
+        })
+        let headerText = $('.headertext')
+        headerText.css({
+            'vertical-align': 'middle',
+            'font-family': 'Roboto',
+            'font-style': 'normal',
+            'font-weight': '500',
+            'font-size':'15px',
+            'line-height': '20px',
+            'color': '#767676',
+            'padding-left': '5px',
+            'padding-right': '5px',
+            'vertical-align': 'top'
+        })
+    }
+
 
     // choose the correct scale image and highlight color to display based on score value
     let score = politeness['score'];
@@ -153,19 +196,21 @@ function injectHTML(language, politeness) {
         wrapperDiv.append(scale);
         scaleDiv = $('.scale');
         scaleDiv.css({
-            'vertical-align': 'middle'
+            'vertical-align': 'baseline'
         })
         let scaleImg = $('.scaleImg')
         scaleImg.css({
             'max-width':'300px',
             'min-width': '100px',
-            'height':'auto'
+            'height':'auto',
+            'padding-left': '40px',
+            'padding-top': '20px'
         })
     }
 
     // setting text message displayed next to the politeness scale
-    const labelhighlight = "<mark style=background-color:" +highlightColor + '>' +label + "</mark>";
-    const annotation = "<span class='annotation'>" + "The original message appears to be " + labelhighlight + " in Chinese </span>"
+    const labelhighlight = "<mark style=background-color:" +highlightColor + '>' + '<b>' + label + "</b></mark>";
+    const annotation = "<span class='annotation'>" + "The original message appears to be " + labelhighlight + " in Chinese. </span>"
     let annotationSpan = $('.annotation')
     if (annotationSpan.length){
         annotationSpan.html(annotation);
@@ -173,14 +218,14 @@ function injectHTML(language, politeness) {
         wrapperDiv.append(annotation);
         annotationSpan = $('.annotation')
         annotationSpan.css({
-            'vertical-align': 'middle',
-            'padding':'20px',
+            'padding':'15px',
             'font-family': 'Roboto',
             'font-style': 'normal',
             'font-weight': '400',
-            'font-size':'14px',
+            'font-size':'15px',
             'line-height': '20px',
-            'color': '#444444'
+            'color': '#444444',
+            'word-wrap':'break-word',
         })
     }
 
@@ -188,7 +233,6 @@ function injectHTML(language, politeness) {
     wrapperDiv.css({
         'padding-left':'8px',
         'padding-top':'15px',
-        'vertical-align':'middle'
     })
 
 
